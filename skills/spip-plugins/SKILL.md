@@ -3,7 +3,7 @@ name: spip-plugins
 description: Use when developing a SPIP plugin (paquet.xml present, _pipelines.php,
   spip_* table references in PHP) or when the user asks about plugin architecture,
   pipelines, hooks, or the SPIP PHP/SQL API. SPIP 4.1+. Not for template/squelettes
-  work — use the spip skill for that.
+  work — use the spip-squelettes skill for that.
 ---
 
 # SPIP plugin development
@@ -113,7 +113,7 @@ function monplugin_mon_pipeline($flux) {
 | Apply SPIP coding standards (SCS1) | `references/coding-standards.md` |
 | Configure composer.json, ecs.php or rector.php | `references/coding-standards.md` |
 | Control page cache duration, disable caching, or trigger invalidation | `references/cache.md` |
-| Write PHPUnit tests for my plugin (filtres, autorisations, squelettes) | `references/howto-test.md` |
+| Write PHPUnit tests for my plugin (filtres, autorisations, squelettes) | invoke the **spip-testing** skill |
 | Support content in multiple languages (`lang`, `id_trad`, translation groups) | `references/multilinguisme.md` |
 | Run work asynchronously (background jobs, scheduled tasks) | `references/queue-jobs.md` |
 | Add chunked file upload (bigup) to a formulaire CVT | `references/upload-bigup.md` |
@@ -189,7 +189,7 @@ function monplugin_mon_pipeline($flux) {
 
 ### Testing a plugin
 
-1. `references/howto-test.md` → set up `tests/`, choose `TestCase` vs `SquelettesTestCase`, run with `make tests`
+→ invoke the **spip-testing** skill
 
 ### Supporting multiple languages in an objet
 

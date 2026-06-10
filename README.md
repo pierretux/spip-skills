@@ -17,6 +17,7 @@ In this repository, skills are version-controlled in `skills/` and installed to 
 - `spip-squelettes`: SPIP template work (BOUCLE, `#BALISE`, criteres, filtres, `<INCLURE>`)
 - `spip-formulaires`: SPIP CVT form structure and conventions (HTML wrappers, `charger/verifier/traiter`, errors)
 - `spip-lang`: SPIP language files (`lang/prefix_XX.php`, key naming conventions, `_T()`, `<:module:key:>`)
+- `spip-logs`: SPIP logging practices (`spip_log()`, journal files, debug workflow)
 
 ## Install (copy-based)
 
@@ -26,20 +27,29 @@ Linux/macOS:
 
 ```bash
 mkdir -p ~/.claude/skills
-cp -R skills/spip-plugins ~/.claude/skills/
-cp -R skills/spip-squelettes ~/.claude/skills/
-cp -R skills/spip-formulaires ~/.claude/skills/
-cp -R skills/spip-lang ~/.claude/skills/
+cp -R skills/spip-* ~/.claude/skills/
 ```
 
 Windows PowerShell:
 
 ```powershell
 New-Item -ItemType Directory -Force "$HOME/.claude/skills" | Out-Null
-Copy-Item -Recurse -Force "skills/spip-plugins" "$HOME/.claude/skills/"
-Copy-Item -Recurse -Force "skills/spip-squelettes" "$HOME/.claude/skills/"
-Copy-Item -Recurse -Force "skills/spip-formulaires" "$HOME/.claude/skills/"
-Copy-Item -Recurse -Force "skills/spip-lang" "$HOME/.claude/skills/"
+Copy-Item -Recurse -Force "skills/spip-*" "$HOME/.claude/skills/"
+```
+
+## Install (symlink-based)
+
+Run from the repository root.
+
+Linux/macOS:
+
+```bash
+mkdir -p ~/.claude/skills
+for d in skills/spip-*; do
+	name="$(basename "$d")"
+	rm -rf "$HOME/.claude/skills/$name"
+	ln -s "$PWD/$d" "$HOME/.claude/skills/$name"
+done
 ```
 
 ## Installation on claude.ai
@@ -79,6 +89,7 @@ You should see these folders:
 - `~/.claude/skills/spip-squelettes`
 - `~/.claude/skills/spip-formulaires`
 - `~/.claude/skills/spip-lang`
+- `~/.claude/skills/spip-logs`
 
 Optional deeper check (Linux/macOS):
 
@@ -87,6 +98,7 @@ test -f ~/.claude/skills/spip-plugins/SKILL.md && echo "spip-plugins OK"
 test -f ~/.claude/skills/spip-squelettes/SKILL.md && echo "spip-squelettes OK"
 test -f ~/.claude/skills/spip-formulaires/SKILL.md && echo "spip-formulaires OK"
 test -f ~/.claude/skills/spip-lang/SKILL.md && echo "spip-lang OK"
+test -f ~/.claude/skills/spip-logs/SKILL.md && echo "spip-logs OK"
 ```
 
 Optional deeper check (Windows PowerShell):
@@ -96,14 +108,63 @@ Test-Path "$HOME/.claude/skills/spip-plugins/SKILL.md"
 Test-Path "$HOME/.claude/skills/spip-squelettes/SKILL.md"
 Test-Path "$HOME/.claude/skills/spip-formulaires/SKILL.md"
 Test-Path "$HOME/.claude/skills/spip-lang/SKILL.md"
+Test-Path "$HOME/.claude/skills/spip-logs/SKILL.md"
 ```
 
 ## Update workflow
 
+### If you used copy-based install
+
 1. Edit files in `skills/<name>/`.
-2. Re-copy the updated skill folder to `~/.claude/skills/`.
+2. Re-copy updated folders to `~/.claude/skills/` (Linux/macOS: `cp -R skills/spip-* ~/.claude/skills/`, PowerShell: `Copy-Item -Recurse -Force "skills/spip-*" "$HOME/.claude/skills/"`).
 3. Verify the skill locally.
 4. Commit changes in this repository.
+
+### If you used symlink-based install
+
+1. Edit files in `skills/<name>/`.
+2. No re-copy needed: symlinks point to your working tree, changes are already reflected.
+3. Verify symlinks and skill files:
+
+```bash
+ls -l ~/.claude/skills/spip-*
+test -L ~/.claude/skills/spip-plugins && echo "spip-plugins link OK"
+```
+
+4. If a new `skills/spip-*` folder was added, run the symlink install loop again to create its link.
+
+## Tests (Anthropic skill-creator)
+
+Prerequisites:
+
+1. Install the plugin in Claude Code:
+
+```text
+/plugin install skill-creator
+```
+
+Running evals in Claude Code:
+
+1. Open the repository (`/src/spip`) in Claude Code.
+2. Run a natural-language request, for example:
+
+```text
+Run evals on my spip-formulaires skill
+```
+
+3. Repeat the same command for other skills by changing the skill name.
+
+Expected artifacts:
+
+- `skills/<skill>-workspace/iteration-*/benchmark.json`
+- `skills/<skill>-workspace/iteration-*/benchmark.md`
+- `skills/<skill>-workspace/iteration-*/review.html`
+
+Quick interpretation:
+
+- `benchmark.json`: structured results by eval/assertion.
+- `benchmark.md`: readable summary (baseline vs with_skill, deltas, trends).
+- `review.html`: detailed report, useful for qualitative review.
 
 ## Troubleshooting
 
